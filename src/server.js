@@ -5,7 +5,6 @@ import { message } from './routes/conversation';
 import axios from 'axios';
 //INSTALL AXIOS;
 const port = 80;
-//Bot token
 const token = '';
 const app = express();
 app.use(bodyParser());
@@ -26,8 +25,21 @@ function sendMessage(msg, channel){
       conversation_id:conversationState.context.conversation_id
     })
       .then(res => {
+        const stuff = res.data.output.generic[0].options;
+        const img = res.data.output.generic[0].source;
+        const replyMsg = res.data.output.text;
         conversationState = res.data.context;
-        msg.reply(res.data.output.text);
+        if (stuff != undefined) {
+          for (var i = 0; i < stuff.length; i++) {
+            msg.reply(stuff[i].label);
+          }
+        }
+        if (img != undefined) {
+          msg.reply(img);
+        }
+        if (replyMsg != undefined) {
+          msg.reply(replyMsg);
+        }
       })
       .catch(err => channel.send(err));
     channel.stopTyping();

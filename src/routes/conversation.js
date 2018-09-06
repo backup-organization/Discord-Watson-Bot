@@ -1,6 +1,5 @@
 import ConversationV1 from 'watson-developer-cloud/conversation/v1';
 
-//Watson credentials
 const assistant = new ConversationV1({
   username:'',
   password:'',
