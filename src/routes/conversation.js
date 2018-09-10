@@ -1,10 +1,11 @@
 import ConversationV1 from 'watson-developer-cloud/conversation/v1';
 
+//watson credentials
 const assistant = new ConversationV1({
   username:'',
   password:'',
   url:'',
-  version:'2018-08-03'
+  version:'2018-09-10'
 });
 
 export function message(msg, res, context){
