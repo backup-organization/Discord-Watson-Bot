@@ -14,19 +14,22 @@ app.use(bodyParser.json());
 
 const client = new Discord.Client();
 var conversationState = {context:{}};
-var channel = {};
 
 client.on('ready', () => {
   console.log('bot running');
 });
 
-function undefCheck(msg, prop){
+function undefCheck(msg, prop, embed){
   if (prop != undefined) {
     if (prop.length > 1) {
       for (var i = 0; i < prop.length; i++) {
-        msg.reply(prop[i].label);
+        if (embed.description != undefined) {
+          embed.setDescription(embed.description +' \n'+ prop[i].label);
+        }else {
+          embed.setDescription(' \n'+ prop[i].label);
+        }
       }}
-    else if (prop != ''){
+    else if (prop != '' && prop != undefined){
       msg.reply(prop);
     }}
 }
@@ -40,6 +43,7 @@ function sendMessage(msg, channel){
       conversation_id:conversationState.context.conversation_id
     })
       .then(res => {
+        const embed = new Discord.RichEmbed();
         const generic =res.data.output.generic;
         for (var i = 0; i < generic.length; i++) {
           const stuff = generic[i].options;
@@ -47,10 +51,14 @@ function sendMessage(msg, channel){
           const replyMsg = res.data.output.text;
           conversationState = res.data.context;
           if (generic[i].title) {
-            msg.reply(generic[i].title);
+            embed.setTitle(generic[i].title);
           }
-          undefCheck(msg, stuff);
+          undefCheck(msg, stuff, embed);
           undefCheck(msg, replyMsg);
+          embed.setColor('#ff0000');
+          if (embed.description != null) {
+            channel.send(embed);
+          }
           if (img != undefined) {
             msg.reply(img);
           }}
@@ -66,11 +74,12 @@ async function clear(msg){
 }
 
 client.on('message', msg => {
-  channel = msg.channel;
+  const channel = msg.channel;
   //your name here-----------------------------------------v
   if (msg.content == 'clear' && msg.author.username === process.env.ADMIN_USER) {
     clear(msg);
-  }else {
+  }
+  else {
     sendMessage(msg, channel);
   }
 });
