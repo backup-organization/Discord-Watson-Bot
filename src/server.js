@@ -3,10 +3,11 @@ import Discord from 'discord.js';
 import bodyParser from 'body-parser';
 import { message } from './routes/conversation';
 import axios from 'axios';
-
-const port = 80;
+import dotenv from 'dotenv';
+dotenv.config();
 //bot token
-const token = '';
+const port = 80;
+const token = process.env.BOT_TOKEN;
 const app = express();
 app.use(bodyParser.urlencoded({ extended:true }));
 app.use(bodyParser.json());
@@ -43,6 +44,9 @@ function sendMessage(msg, channel){
         const img = res.data.output.generic[0].source;
         const replyMsg = res.data.output.text;
         conversationState = res.data.context;
+        if (res.data.output.generic[0].title) {
+          msg.reply(res.data.output.generic[0].title);
+        }
         undefCheck(msg, stuff);
         undefCheck(msg, replyMsg);
         if (img != undefined) {
@@ -61,14 +65,13 @@ async function clear(msg){
 
 client.on('message', msg => {
   channel = msg.channel;
-  //your name here--------------------------------------v
-  if (msg.content == 'clear' && msg.author.username === '') {
+  //your name here-----------------------------------------v
+  if (msg.content == 'clear' && msg.author.username === process.env.ADMIN_USER) {
     clear(msg);
   }else {
     sendMessage(msg, channel);
   }
 });
-
 
 client.login(token);
 
