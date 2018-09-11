@@ -40,18 +40,20 @@ function sendMessage(msg, channel){
       conversation_id:conversationState.context.conversation_id
     })
       .then(res => {
-        const stuff = res.data.output.generic[0].options;
-        const img = res.data.output.generic[0].source;
-        const replyMsg = res.data.output.text;
-        conversationState = res.data.context;
-        if (res.data.output.generic[0].title) {
-          msg.reply(res.data.output.generic[0].title);
-        }
-        undefCheck(msg, stuff);
-        undefCheck(msg, replyMsg);
-        if (img != undefined) {
-          msg.reply(img);
-        }
+        const generic =res.data.output.generic;
+        for (var i = 0; i < generic.length; i++) {
+          const stuff = generic[i].options;
+          const img = generic[i].source;
+          const replyMsg = res.data.output.text;
+          conversationState = res.data.context;
+          if (generic[i].title) {
+            msg.reply(generic[i].title);
+          }
+          undefCheck(msg, stuff);
+          undefCheck(msg, replyMsg);
+          if (img != undefined) {
+            msg.reply(img);
+          }}
       })
       .catch(err => channel.send(err));
     channel.stopTyping();
@@ -72,7 +74,6 @@ client.on('message', msg => {
     sendMessage(msg, channel);
   }
 });
-
 client.login(token);
 
 app.post('/orchestrator', (req, res) => {
