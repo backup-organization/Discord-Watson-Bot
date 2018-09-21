@@ -46,7 +46,9 @@ function sendMessage(msg, channel){
   if(msg.author.id !== client.user.id){
     channel.startTyping();
     const stream = fs.createWriteStream('src/log/log.txt', {flags:'a'});
-    stream.write(msg.content+ '\n');
+    stream.write('{user: '+ msg.author.username +
+                 ',\ntext: '+ msg.content+
+                 ',\ntimestamp: '+ new Date().toLocaleString()+'},\n');
     stream.end();
     axios.post('/orchestrator', {
       text: msg.content,
