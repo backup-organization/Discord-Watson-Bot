@@ -22,9 +22,9 @@ export function message(msg, res, context){
     if (err) {
       res.send(err);
     }else {
-      personality(msg);
-      checkTone(msg, res);
-      naturalAnalysis(msg);
+      // personality(msg);
+      // checkTone(msg, res);
+      // naturalAnalysis(msg);
       res.send(response);
     }
   });

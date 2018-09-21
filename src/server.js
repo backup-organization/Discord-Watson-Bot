@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import { message } from './routes/conversation';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import fs from 'fs';
 dotenv.config();
 //bot token
 const port = 80;
@@ -44,6 +45,9 @@ function undefCheck(msg, prop, embed){
 function sendMessage(msg, channel){
   if(msg.author.id !== client.user.id){
     channel.startTyping();
+    const stream = fs.createWriteStream('src/log/log.txt', {flags:'a'});
+    stream.write(msg.content+ '\n');
+    stream.end();
     axios.post('/orchestrator', {
       text: msg.content,
       context: conversationState.context,
