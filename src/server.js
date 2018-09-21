@@ -17,6 +17,13 @@ var conversationState = {context:{}};
 
 client.on('ready', () => {
   console.log('bot running');
+  axios.get('/photos', {
+    clientID:process.env.photos_client_id,
+    clientSecret:process.env.clientSecret,
+    callbackURL:process.env.photos_endpoint
+  })
+    .then(res => console.log(res))
+    .catch(err => err);
 });
 
 function undefCheck(msg, prop, embed){
@@ -91,6 +98,9 @@ app.post('/orchestrator', (req, res) => {
 
 app.get('/', (req, res) => {
   res.send('Api teste');
+});
+
+app.get('/photos', (req, res) => {
 });
 
 app.listen(port, () => {
