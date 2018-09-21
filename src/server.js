@@ -2,6 +2,9 @@ import express from 'express';
 import Discord from 'discord.js';
 import bodyParser from 'body-parser';
 import { message } from './routes/conversation';
+import { checkTone } from './routes/toneAnalysis';
+import {naturalAnalysis} from './routes/naturalLanguage';
+import { personality } from './routes/personality';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -18,13 +21,6 @@ var conversationState = {context:{}};
 
 client.on('ready', () => {
   console.log('bot running');
-  axios.get('/photos', {
-    clientID:process.env.photos_client_id,
-    clientSecret:process.env.clientSecret,
-    callbackURL:process.env.photos_endpoint
-  })
-    .then(res => console.log(res))
-    .catch(err => err);
 });
 
 function undefCheck(msg, prop, embed){
@@ -80,17 +76,26 @@ function sendMessage(msg, channel){
     channel.stopTyping();
   }
 }
-async function clear(msg){
-  msg.delete();
+async function clear(msg, channel){
   const nMsg = await msg.channel.fetchMessages({limit:100});
-  msg.channel.bulkDelete(nMsg);
+  channel.bulkDelete(nMsg);
+  msg.delete();
+}
+async function analyze(){
+  await fs.readFile('src/log/log.txt', 'utf8', (err, data) => {
+    naturalAnalysis(data);
+    personality(data);
+    checkTone(data);
+  });
 }
 
 client.on('message', msg => {
   const channel = msg.channel;
   //your name here-----------------------------------------v
   if (msg.content == 'clear' && msg.author.username === process.env.ADMIN_USER) {
-    clear(msg);
+    clear(msg, channel);
+  }else if (msg.content == 'analyze' && msg.author.username === process.env.ADMIN_USER) {
+    analyze();
   }
   else {
     sendMessage(msg, channel);
@@ -104,9 +109,6 @@ app.post('/orchestrator', (req, res) => {
 
 app.get('/', (req, res) => {
   res.send('Api teste');
-});
-
-app.get('/photos', (req, res) => {
 });
 
 app.listen(port, () => {

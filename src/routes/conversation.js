@@ -1,7 +1,4 @@
 import ConversationV1 from 'watson-developer-cloud/conversation/v1';
-import { checkTone } from './toneAnalysis';
-import {naturalAnalysis} from './naturalLanguage';
-import { personality } from './personality';
 import dotenv from 'dotenv';
 dotenv.load();
 
@@ -22,9 +19,6 @@ export function message(msg, res, context){
     if (err) {
       res.send(err);
     }else {
-      // personality(msg);
-      // checkTone(msg, res);
-      // naturalAnalysis(msg);
       res.send(response);
     }
   });
