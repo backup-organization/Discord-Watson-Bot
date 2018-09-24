@@ -89,6 +89,7 @@ async function analyze(){
   });
 }
 
+
 client.on('message', msg => {
   const channel = msg.channel;
   //your name here-----------------------------------------v
@@ -98,7 +99,9 @@ client.on('message', msg => {
     analyze();
   }
   else {
-    sendMessage(msg, channel);
+    if (msg.mentions._content.includes(process.env.BOT_ID)) {
+      sendMessage(msg, channel);
+    }
   }
 });
 client.login(token);
