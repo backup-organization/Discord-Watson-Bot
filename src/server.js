@@ -38,14 +38,18 @@ function undefCheck(msg, prop, embed){
     }}
 }
 
+function logMessages(msg){
+  const stream = fs.createWriteStream(process.env.LOGPATH, {flags:'a'});
+  stream.write('{"user": "'+ msg.author.username +
+               '",\n"text": "'+ msg.content+
+               '",\n"timestamp": "'+ new Date().toLocaleString()+'"},\n');
+  stream.end();
+}
+
 function sendMessage(msg, channel){
   if(msg.author.id !== client.user.id){
     channel.startTyping();
-    const stream = fs.createWriteStream('src/log/log.txt', {flags:'a'});
-    stream.write('{user: '+ msg.author.username +
-                 ',\ntext: '+ msg.content+
-                 ',\ntimestamp: '+ new Date().toLocaleString()+'},\n');
-    stream.end();
+    logMessages(msg);
     axios.post('/orchestrator', {
       text: msg.content,
       context: conversationState.context,
@@ -71,8 +75,7 @@ function sendMessage(msg, channel){
           if (img != undefined) {
             msg.reply(img);
           }}
-      })
-      .catch(err => channel.send(err));
+      }).catch(err => channel.send(err));
     channel.stopTyping();
   }
 }
@@ -82,13 +85,12 @@ async function clear(msg, channel){
   msg.delete();
 }
 async function analyze(){
-  await fs.readFile('src/log/log.txt', 'utf8', (err, data) => {
+  await fs.readFile(process.env.LOGPATH, 'utf8', (err, data) => {
     naturalAnalysis(data);
     personality(data);
     checkTone(data);
   });
 }
-
 
 client.on('message', msg => {
   const channel = msg.channel;
