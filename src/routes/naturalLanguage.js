@@ -13,10 +13,6 @@ export function naturalAnalysis(params){
   naturalLanguage.analyze({
     text:params,
     features: {
-      concepts:{
-        emotion: true,
-        sentiment: true,
-      },
       entities: {
         emotion: true,
         sentiment: true,

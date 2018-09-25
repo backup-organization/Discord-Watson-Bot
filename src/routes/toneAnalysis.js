@@ -10,30 +10,32 @@ const toneAnalyzer = new ToneAnalyzerV3({
 });
 
 export function checkTone(req){
-  toneAnalyzer.tone({
-    tone_input:{text:req},
-    content_type:'application/json'
-  },
-  (error, toneAnalysis) => {
-    if (error) {
-      console.log(error);
-    }else {
-      const resp = toneAnalysis.document_tone.tones;
-      console.log(resp);
-    }
+  return new Promise((resolve, reject) => {
+    toneAnalyzer.tone({
+      tone_input:{text:req},
+      content_type:'application/json'
+    },
+    (error, toneAnalysis) => {
+      if (error) {
+        reject(error);
+      }else {
+        const resp = toneAnalysis.document_tone.tones;
+        resolve(resp);  
+      }
+    });
   });
-  const utterances=[];
-  toneAnalyzer.toneChat({
-    utterances:utterances,
-    content_type:'application/json'
-  },
-  (error, utteranceAnalysis) => {
-    if (error) {
-      console.log(error);
-    }else {
-      for (var i = 0; i < utterances.length; i++) {
-        const resp2 = utteranceAnalysis.utterances_tone[i];
-        console.log(resp2);
-      }}
-  });
+  // const utterances=[];
+  // toneAnalyzer.toneChat({
+  //   utterances:utterances,
+  //   content_type:'application/json'
+  // },
+  // (error, utteranceAnalysis) => {
+  //   if (error) {
+  //     console.log(error);
+  //   }else {
+  //     for (var i = 0; i < utterances.length; i++) {
+  //       const resp2 = utteranceAnalysis.utterances_tone[i];
+  //       console.log(resp2);
+  //     }}
+  // });
 }

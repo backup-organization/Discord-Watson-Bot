@@ -40,9 +40,9 @@ function undefCheck(msg, prop, embed){
 
 function logMessages(msg){
   const stream = fs.createWriteStream(process.env.LOGPATH, {flags:'a'});
-  stream.write('{"user": "'+ msg.author.username +
-               '",\n"text": "'+ msg.content+
-               '",\n"timestamp": "'+ new Date().toLocaleString()+'"},\n');
+  stream.write('{"user":"'+ msg.author.username +
+               '",\n"text":"'+ msg.content.replace(process.env.BOT_ID ,'').trim()+
+               '",\n"timestamp":"'+ new Date().toLocaleString()+'"},\n');
   stream.end();
 }
 
@@ -51,7 +51,7 @@ function sendMessage(msg, channel){
     channel.startTyping();
     logMessages(msg);
     axios.post('/orchestrator', {
-      text: msg.content,
+      text: msg.content.replace(process.env.BOT_ID ,'').trim(),
       context: conversationState.context,
       conversation_id:conversationState.context.conversation_id
     })
@@ -86,9 +86,9 @@ async function clear(msg, channel){
 }
 async function analyze(){
   await fs.readFile(process.env.LOGPATH, 'utf8', (err, data) => {
-    naturalAnalysis(data);
+    // naturalAnalysis(data);
     personality(data);
-    checkTone(data);
+    // checkTone(data);
   });
 }
 
@@ -99,12 +99,10 @@ client.on('message', msg => {
     clear(msg, channel);
   }else if (msg.content == 'analyze' && msg.author.username === process.env.ADMIN_USER) {
     analyze();
-  }
-  else {
+  }else {
     if (msg.mentions._content.includes(process.env.BOT_ID)) {
       sendMessage(msg, channel);
-    }
-  }
+    }}
 });
 client.login(token);
 
